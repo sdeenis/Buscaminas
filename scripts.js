@@ -8,31 +8,36 @@ window.onload = comprobarSesion
 
 function comprobarSesion() {
     console.log("comprobando sesion")
-    if (localStorage.getItem("contenidoBody")) {
-        console.log("sesion iniciada")
-        console.log(localStorage.getItem("contenidoBody"))
 
-        document.body.innerHTML = localStorage.getItem("contenidoBody")
-
-        //hemos de asignar los listeners de nuevo pq no se pasan al localStorage
-        asignarEventListeners();
-
-        //recuperamos todo
-        arrayBombas = localStorage.getItem("arrayBombas")
-        numeroCasillasDesmarcadas = document.getElementsByClassName("casillaabierta").length
-        numeroFilas = localStorage.getItem("numeroFilas")
-        numeroColumnas = localStorage.getItem("numeroColumnas")
-        numeroBombas = localStorage.getItem("numeroBombas")
-        numeroBanderas = localStorage.getItem("numeroBanderas")
-        document.getElementsByClassName("numBanderas")[0].textContent = `${numeroBanderas} 🚩`
-        
-        //recuperamos el cronometro
-        let segundosGuardados = Number(localStorage.getItem("segundosTranscurridos"));
-        let minutosGuardados = Number(localStorage.getItem("minutosTranscurridos"));
-
-        empezarCronometro(minutosGuardados, segundosGuardados);
+    if (typeof (Storage) === "undefined") {
+        console.log("no se pueden usar las sesiones")
     } else {
-        console.log("sesion no iniciada")
+        if (localStorage.getItem("contenidoBody")) {
+            console.log("sesion iniciada")
+            console.log(localStorage.getItem("contenidoBody"))
+
+            document.body.innerHTML = localStorage.getItem("contenidoBody")
+
+            //hemos de asignar los listeners de nuevo pq no se pasan al localStorage
+            asignarEventListeners();
+
+            //recuperamos todo
+            arrayBombas = localStorage.getItem("arrayBombas")
+            numeroCasillasDesmarcadas = document.getElementsByClassName("casillaabierta").length
+            numeroFilas = localStorage.getItem("numeroFilas")
+            numeroColumnas = localStorage.getItem("numeroColumnas")
+            numeroBombas = localStorage.getItem("numeroBombas")
+            numeroBanderas = localStorage.getItem("numeroBanderas")
+            document.getElementsByClassName("numBanderas")[0].textContent = `${numeroBanderas} 🚩`
+
+            //recuperamos el cronometro
+            let segundosGuardados = Number(localStorage.getItem("segundosTranscurridos"));
+            let minutosGuardados = Number(localStorage.getItem("minutosTranscurridos"));
+
+            empezarCronometro(minutosGuardados, segundosGuardados);
+        } else {
+            console.log("sesion no iniciada")
+        }
     }
 }
 
@@ -54,8 +59,10 @@ function guardarSesion() {
     localStorage.setItem("numeroColumnas", numeroColumnas)
     localStorage.setItem("numeroBombas", numeroBombas)
     localStorage.setItem("numeroBanderas", numeroBanderas)
+    //el crono lo guardamos en la funcion del crono
 }
 
+//hemos de asignar los listeners de nuevo pq no se pasan al localStorage
 function asignarEventListeners() {
     let casillas = document.getElementsByClassName("casilla");
     for (let casilla of casillas) {
@@ -68,6 +75,7 @@ function asignarEventListeners() {
 
 
 function iniciarJuego() {
+    //configuraciones iniciales
     finalizarSesion()
     numeroCasillasDesmarcadas = 0
     let dificultad = document.getElementById("dificultad").value
@@ -79,11 +87,12 @@ function iniciarJuego() {
 }
 
 function empezarCronometro(minutosInic = 0, segundosInic = 0) {
-    clearInterval(cronometro)
+    clearInterval(cronometro) //es necesario para resetear el crono al pulsar "iniciar juego"
 
     let segundos = segundosInic
     let minutos = minutosInic
 
+    //rellenamos con '0' hasta 2 cifras
     let minStr = minutos.toString().padStart(2, '0')
     let segStr = segundos.toString().padStart(2, '0')
 
@@ -121,8 +130,8 @@ function asignarVariables(dificultad) {
         case "media":
             numeroFilas = 18
             numeroColumnas = 18
-            numeroBombas = 97
-            numeroBanderas = 97
+            numeroBombas = 65
+            numeroBanderas = 65
             break
         case "dificil":
             numeroFilas = 24
@@ -141,6 +150,7 @@ function generarTablero() {
     let tablero = document.getElementById("tableroBM")
     tablero.innerHTML = ""
 
+    //creamos el div de envima, donde irá el nº de banderas y el crono
     let filaSuperior = document.createElement("div")
     filaSuperior.className = "filaSuperior"
 
@@ -157,6 +167,7 @@ function generarTablero() {
 
     tablero.appendChild(filaSuperior)
 
+    //creamos las casillas del buscaminas
     for (let i = 0; i < numeroFilas; i++) {
         let fila = document.createElement("div")
         fila.className = "fila"
@@ -165,7 +176,7 @@ function generarTablero() {
             casilla.className = "casilla"
             casilla.id = `${i}-${j}` //le damos ID dinamico
             casilla.addEventListener("click", abrirCasilla)
-            casilla.addEventListener("contextmenu", marcarCasilla)
+            casilla.addEventListener("contextmenu", marcarCasilla) //click derecho
             fila.appendChild(casilla)
         }
         tablero.appendChild(fila)
@@ -191,7 +202,6 @@ function abrirCasilla(e) {
 
     if (arrayBombas.includes(e.target.id)) {
         console.log("Has perdido")
-        e.target.style.backgroundColor = "red"
         hasPerdido()
     } else {
         let cont = detectarBombas(e.target.id)
@@ -201,7 +211,7 @@ function abrirCasilla(e) {
             e.target.textContent = cont
             e.target.removeEventListener("click", abrirCasilla)
             e.target.removeEventListener("contextmenu", marcarCasilla)
-            
+
             numeroCasillasDesmarcadas++
             comprobarVictoria()
             console.log(`casillas desmarcadas ${numeroCasillasDesmarcadas}`)
@@ -256,6 +266,28 @@ function hasPerdido() {
     mensajeDerrota.style.display = "block";
 }
 
+function detectarBombas(posicion) {
+    // console.log(posicion + " detectando bombas")
+    //separamos las coordenadas
+    let coordenadaX = Number(posicion.split("-")[0])
+    let coordenadaY = Number(posicion.split("-")[1])
+    // console.log(coordenadaX, coordenadaY)
+
+    let cont = 0;
+
+    for (let i = coordenadaX - 1; i < coordenadaX + 2; i++) {
+        for (let j = coordenadaY - 1; j < coordenadaY + 2; j++) {
+            let coor = "" + i + "-" + j
+            console.log(coor)
+            if (arrayBombas.includes(coor)) {
+                cont++
+            }
+        }
+    }
+    console.log(cont)
+    return cont;
+}
+
 function abrirVecinas(posicion) {
     let coordenadaX = Number(posicion.split("-")[0])
     let coordenadaY = Number(posicion.split("-")[1])
@@ -285,26 +317,7 @@ function abrirVecinas(posicion) {
     }
 }
 
-function detectarBombas(posicion) {
-    // console.log(posicion + " detectando bombas")
-    let coordenadaX = Number(posicion.split("-")[0])
-    let coordenadaY = Number(posicion.split("-")[1])
-    // console.log(coordenadaX, coordenadaY)
 
-    let cont = 0;
-
-    for (let i = coordenadaX - 1; i < coordenadaX + 2; i++) {
-        for (let j = coordenadaY - 1; j < coordenadaY + 2; j++) {
-            let coor = "" + i + "-" + j
-            console.log(coor)
-            if (arrayBombas.includes(coor)) {
-                cont++
-            }
-        }
-    }
-    console.log(cont)
-    return cont;
-}
 
 function marcarCasilla(e) {
     e.preventDefault()
@@ -317,6 +330,7 @@ function marcarCasilla(e) {
         guardarSesion()
     } else {
         e.target.classList.add("marcada");
+        e.target.removeEventListener("click", abrirCasilla)
         document.getElementsByClassName("numBanderas")[0].textContent = `${--numeroBanderas} 🚩`;
         guardarSesion()
     }
