@@ -8,6 +8,7 @@ Un juego clásico de Buscaminas desarrollado completamente con **HTML, CSS y Jav
 - Diferentes niveles de dificultad.
 - Detección de minas y contador de banderas.
 - Reinicio rápido del juego.
+- Almacenamiento en el navegador con localStorage.
 
 ## 📸 Capturas de pantalla
 
