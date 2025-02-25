@@ -326,6 +326,7 @@ function marcarCasilla(e) {
 
     if (e.target.classList.contains("marcada")) {
         e.target.classList.remove("marcada");
+        e.target.addEventListener("click",abrirCasilla)
         document.getElementsByClassName("numBanderas")[0].textContent = `${++numeroBanderas} 🚩`;
         guardarSesion()
     } else {
