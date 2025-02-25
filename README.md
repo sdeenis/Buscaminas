@@ -11,7 +11,7 @@ Un juego clásico de Buscaminas desarrollado completamente con **HTML, CSS y Jav
 
 ## 📸 Capturas de pantalla
 
-![Captura de muestra buscaminas 1](https://github.com/sdeenis/buscaminas/muestra.png)
+![Captura de muestra buscaminas 1](https://github.com/sdeenis/Buscaminas/blob/main/muestra.png)
 
 ## 💻 Desplegado en:
 
