@@ -15,4 +15,4 @@ Un juego clásico de Buscaminas desarrollado completamente con **HTML, CSS y Jav
 
 ## 💻 Desplegado en:
 
-[buscaminas.sdenis.tech](buscaminas.sdenis.tech)
+[buscaminas.sdenis.tech](http://buscaminas.sdenis.tech)
